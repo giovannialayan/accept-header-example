@@ -26,7 +26,7 @@ const getCats = (request, response, acceptedTypes) => {
       </response>
     `;
 
-    return respond(request, response);
+    return respond(request, response, responseXML, 'text/xml');
   }
 
   const catString = JSON.stringify(cat);
