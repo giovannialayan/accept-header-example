@@ -12,6 +12,28 @@ const getIndex = (request, response) => {
   respond(request, response, index, 'text/html');
 };
 
+const getCats = (request, response, acceptedTypes) => {
+  const cat = {
+    name: 'jim',
+    age: 1000,
+  };
+
+  if(acceptedTypes[0] === 'text/xml') {
+    let responseXML = `
+      <response>
+        <name>${cat.name}</name>
+        <age>${cat.age}</age>
+      </response>
+    `;
+
+    return respond(request, response);
+  }
+
+  const catString = JSON.stringify(cat);
+
+  return respond(request, response, catString, 'application/json');
+};
+
 module.exports = {
   getCats,
   getIndex,

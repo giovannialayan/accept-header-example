@@ -24,14 +24,61 @@
     }
   </style>
   <script>
-    const sendFetchRequest = (url, acceptedType) => {
+    const handleResponse = (response) => {
+      response.text().then((resText) => {
+        console.log(resText);
 
+        let contentType = response.headers.get('Content-Type');
+        
+        const content = document.querySelector("#content");
+        content.appendChild(document.createElement('hr'));
+        
+        const h1 = document.createElement('h1');
+        const p = document.createElement('p');
+        const h2 = document.createElement('h2');
+        const rawData = document.createElement('p');
+
+        h2.textContent = contentType;
+        rawData.textContent = resText;
+
+        if(contentType === 'text/xml') {
+          let parsedResponse = new window.DOMParser().parseFromString(resText, 'text/xml');
+          h1.textContent = `name: ${parsedResponse.querySelector('name').textContent}`;
+          p.textContent = `age: ${parsedResponse.querySelector('age').textContent}`;
+        }
+        else {
+          let parsedResponse = JSON.parse(resText);
+          h1.textContent = `name: ${parsedResponse.name}`;
+          p.textContent = `age: ${parsedResponse.age}`;
+        }
+
+        content.appendChild(h1);
+        content.appendChild(p);
+        content.appendChild(h2);
+        content.appendChild(rawData);
+      });
+    }
+
+    const sendFetchRequest = (url, acceptedType) => {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Accept': acceptedType
+        },
+      };
+
+      let fetchPromise = fetch(url, options);
+      fetchPromise.then((response) => {
+        handleResponse(response);
+      });
     };
 
     const init = () => {
       const jsonButton = document.querySelector("#getCatsJSON");
       const xmlButton = document.querySelector("#getCatsXML");
 
+      jsonButton.addEventListener('click', () => sendFetchRequest('/cats', 'application/json'));
+      xmlButton.addEventListener('click', () => sendFetchRequest('/cats', 'text/xml'));
     };
 
     window.onload = init;
